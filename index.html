@@ -6,31 +6,60 @@
   <title>Eloşum 💍</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 100px;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
       background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      overflow: hidden;
+      font-family: 'Arial', sans-serif;
     }
+
     h1 {
       font-size: 2em;
-      color: #333;
+      color: #fff;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+      text-align: center;
+      margin-bottom: 40px;
     }
+
     .btn {
       font-size: 20px;
       padding: 15px 30px;
       margin: 20px;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       cursor: pointer;
       transition: all 0.3s ease;
     }
+
     #yesBtn {
       background-color: #ff4d6d;
       color: white;
     }
+
     #noBtn {
-      background-color: #ccc;
+      background-color: #f1f1f1;
       color: black;
+    }
+
+    /* Arka planda yüzük animasyonu */
+    .ring {
+      position: absolute;
+      font-size: 30px;
+      animation: float 10s linear infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes float {
+      from {
+        transform: translateY(100vh) rotate(0deg);
+      }
+      to {
+        transform: translateY(-10vh) rotate(360deg);
+      }
     }
   </style>
 </head>
@@ -42,10 +71,12 @@
   </div>
   <p id="result"></p>
 
+  <!-- Konfeti kütüphanesi -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
   <script>
     const yesBtn = document.getElementById("yesBtn");
     const noBtn = document.getElementById("noBtn");
-    const result = document.getElementById("result");
 
     let yesSize = 1;
 
@@ -55,8 +86,32 @@
     });
 
     yesBtn.addEventListener("click", () => {
-      document.body.innerHTML = "<h1>Eyww sagol 😍❤️</h1>";
+      document.body.innerHTML = "<h1>Eyww sağol 😍❤️</h1>";
+      
+      // Konfeti efekti
+      confetti({
+        particleCount: 200,
+        spread: 90,
+        origin: { y: 0.6 }
+      });
     });
+
+    // Arka plana yüzükler ekle
+    function createRing() {
+      const ring = document.createElement("div");
+      ring.classList.add("ring");
+      ring.textContent = "💍";
+      ring.style.left = Math.random() * 100 + "vw";
+      ring.style.animationDuration = (5 + Math.random() * 5) + "s";
+      ring.style.fontSize = (20 + Math.random() * 20) + "px";
+      document.body.appendChild(ring);
+
+      setTimeout(() => {
+        ring.remove();
+      }, 10000);
+    }
+
+    setInterval(createRing, 500);
   </script>
 </body>
 </html>
