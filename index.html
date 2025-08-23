@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>bebisimmmm 💕</title>
+  <title>ELA ❤️</title>
   <style>
     body {
       margin: 0;
@@ -11,135 +11,80 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
-      background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
-      background-size: 400% 400%;
-      animation: gradientShift 15s ease infinite;
-      overflow: hidden;
+      background: linear-gradient(135deg, #ffdee9, #b5fffc);
       font-family: 'Comic Sans MS', cursive, sans-serif;
+      overflow: hidden;
+    }
+
+    .heart {
       position: relative;
+      width: 200px;
+      height: 180px;
+      transform: rotate(-45deg);
+      animation: colorChange 3s infinite;
     }
 
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    h1 {
-      font-size: 1.8em; /* iPhone 13 için biraz küçültüldü */
-      color: white;
-      text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
-      text-align: center;
-      margin-bottom: 40px;
-      z-index: 2;
-    }
-
-    .btn-container {
-      z-index: 2;
-      display: flex;
-      gap: 20px;
-      position: relative;
-    }
-
-    .btn {
-      font-size: 20px;
-      padding: 15px 30px;
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    }
-
-    #yesBtn {
-      background-color: #ff4d6d;
-      color: white;
-      position: relative;
-      z-index: 5; /* Her zaman önde olacak */
-      transform: scale(1);
-      transition: transform 0.3s ease;
-    }
-
-    #yesBtn:hover {
-      background-color: #ff1f49;
-    }
-
-    #noBtn {
-      background-color: #f1f1f1;
-      color: #333;
-    }
-
-    #noBtn:hover {
-      background-color: #ddd;
-    }
-
-    /* Arka plandaki süzülen emojiler */
-    .emoji {
+    .heart::before,
+    .heart::after {
+      content: "";
       position: absolute;
-      font-size: 30px;
-      animation: float 10s linear infinite;
-      opacity: 0.7;
-      z-index: 0; /* butonların arkasında */
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: inherit;
     }
 
-    @keyframes float {
-      from { transform: translateY(100vh) rotate(0deg); }
-      to { transform: translateY(-10vh) rotate(360deg); }
+    .heart::before {
+      top: -100px;
+      left: 0;
+    }
+
+    .heart::after {
+      left: 100px;
+      top: 0;
+    }
+
+    .letter {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(45deg);
+      font-size: 90px;
+      font-weight: bold;
+      color: white;
+      animation: letterChange 3s infinite;
+    }
+
+    @keyframes colorChange {
+      0%   { background: #ff4d6d; }
+      33%  { background: #ffcc00; }
+      66%  { background: #4dd5ff; }
+      100% { background: #ff4d6d; }
+    }
+
+    @keyframes letterChange {
+      0%, 33%   { content: "E"; color: white; }
+      34%, 66%  { content: "L"; color: #333; }
+      67%, 100% { content: "A"; color: #fff; }
     }
   </style>
 </head>
 <body>
-  <h1>Eloşum 💕 Seninle evlenebilir miyim?</h1>
-  <div class="btn-container">
-    <button id="yesBtn" class="btn">Evet 💍</button>
-    <button id="noBtn" class="btn">Hayır 🙈</button>
+  <div class="heart">
+    <div class="letter">E</div>
   </div>
 
-  <!-- Konfeti -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
   <script>
-    const yesBtn = document.getElementById("yesBtn");
-    const noBtn = document.getElementById("noBtn");
+    const letters = ["E", "L", "A"];
+    const colors = ["white", "#333", "#fff"];
+    let index = 0;
+    const letterEl = document.querySelector(".letter");
 
-    let yesScale = 1;
-
-    noBtn.addEventListener("click", () => {
-      yesScale += 0.2;
-      yesBtn.style.transform = `scale(${yesScale})`;
-    });
-
-    yesBtn.addEventListener("click", () => {
-      document.body.innerHTML = "<h1 style='color:white; text-shadow:2px 2px 6px rgba(0,0,0,0.4); font-size:2em; text-align:center;'>Eyww sağol ❤️🥰</h1>";
-      
-      // Konfeti patlaması
-      var duration = 2 * 1000;
-      var end = Date.now() + duration;
-      (function frame() {
-        confetti({
-          particleCount: 8,
-          spread: 120
-        });
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        }
-      })();
-    });
-
-    // Arka plana emojiler ekle
-    const emojis = ["💍", "❤️", "💖", "✨"];
-    function createEmoji() {
-      const emoji = document.createElement("div");
-      emoji.classList.add("emoji");
-      emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-      emoji.style.left = Math.random() * 100 + "vw";
-      emoji.style.animationDuration = (6 + Math.random() * 6) + "s";
-      emoji.style.fontSize = (20 + Math.random() * 25) + "px";
-      document.body.appendChild(emoji);
-      setTimeout(() => emoji.remove(), 12000);
-    }
-    setInterval(createEmoji, 500);
+    setInterval(() => {
+      index = (index + 1) % letters.length;
+      letterEl.textContent = letters[index];
+      letterEl.style.color = colors[index];
+    }, 1000);
   </script>
 </body>
 </html>
