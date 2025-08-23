@@ -3,17 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ELA ❤️</title>
+  <title>ELA</title>
   <style>
     body {
       margin: 0;
+      overflow: hidden;
       height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(135deg, #ffdee9, #b5fffc);
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      overflow: hidden;
+      background: black;
+      transition: background 2s ease;
+      font-family: "Comic Sans MS", cursive, sans-serif;
     }
 
     .heart {
@@ -21,7 +22,8 @@
       width: 200px;
       height: 180px;
       transform: rotate(-45deg);
-      animation: colorChange 3s infinite;
+      animation: pulse 1s infinite;
+      z-index: 2;
     }
 
     .heart::before,
@@ -31,10 +33,7 @@
       width: 200px;
       height: 200px;
       border-radius: 50%;
-      background: inherit;
-    }
-
-    .heart::before {
+      background: red;
       top: -100px;
       left: 0;
     }
@@ -49,42 +48,111 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%) rotate(45deg);
-      font-size: 90px;
+      font-size: 80px;
       font-weight: bold;
       color: white;
-      animation: letterChange 3s infinite;
+      z-index: 3;
     }
 
-    @keyframes colorChange {
-      0%   { background: #ff4d6d; }
-      33%  { background: #ffcc00; }
-      66%  { background: #4dd5ff; }
-      100% { background: #ff4d6d; }
+    @keyframes pulse {
+      0% { transform: scale(1) rotate(-45deg); }
+      50% { transform: scale(1.1) rotate(-45deg); }
+      100% { transform: scale(1) rotate(-45deg); }
     }
 
-    @keyframes letterChange {
-      0%, 33%   { content: "E"; color: white; }
-      34%, 66%  { content: "L"; color: #333; }
-      67%, 100% { content: "A"; color: #fff; }
+    .floating {
+      position: absolute;
+      font-size: 30px;
+      opacity: 0.7;
+      animation: float 10s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) translateX(0);
+        opacity: 0;
+      }
+      30% { opacity: 1; }
+      100% {
+        transform: translateY(-10vh) translateX(50px);
+        opacity: 0;
+      }
+    }
+
+    .message {
+      position: absolute;
+      top: 70%;
+      font-size: 28px;
+      font-weight: bold;
+      color: pink;
+      opacity: 0;
+      transition: opacity 1s ease;
+      z-index: 5;
+    }
+
+    .show {
+      opacity: 1;
     }
   </style>
 </head>
 <body>
-  <div class="heart">
-    <div class="letter">E</div>
+  <div class="heart" id="heart">
+    <div class="letter" id="letter">E</div>
   </div>
+  <div class="message" id="message">Seni Çok Seviyorum ❤️</div>
 
   <script>
     const letters = ["E", "L", "A"];
-    const colors = ["white", "#333", "#fff"];
+    const colors = ["red", "hotpink", "purple", "crimson", "orange"];
+    const bgColors = ["#000000", "#1a1a2e", "#0f3460", "#16213e", "#2c003e"];
     let index = 0;
-    const letterEl = document.querySelector(".letter");
+    const heart = document.querySelector(".heart");
+    const letter = document.getElementById("letter");
+    const body = document.body;
 
     setInterval(() => {
       index = (index + 1) % letters.length;
-      letterEl.textContent = letters[index];
-      letterEl.style.color = colors[index];
+      letter.textContent = letters[index];
+      let color = colors[index % colors.length];
+      heart.style.setProperty("--heart-color", color);
+      heart.style.background = color;
+      heart.style.setProperty("background", color);
+      heart.style.setProperty("color", "white");
+
+      body.style.background = bgColors[Math.floor(Math.random() * bgColors.length)];
+      heart.style.setProperty("--letter-color", "white");
+
+      heart.querySelectorAll("::before, ::after").forEach(el => {
+        el.style.background = color;
+      });
     }, 1000);
+
+    // Ekrana tıklayınca mesaj
+    const message = document.getElementById("message");
+    document.body.addEventListener("click", () => {
+      message.classList.add("show");
+      setTimeout(() => {
+        message.classList.remove("show");
+      }, 3000);
+    });
+
+    // Emoji yağmuru
+    function createFloatingEmoji() {
+      const emojis = ["❤️", "💍", "💕", "✨", "💖"];
+      const emoji = document.createElement("div");
+      emoji.classList.add("floating");
+      emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+      emoji.style.left = Math.random() * window.innerWidth + "px";
+      emoji.style.fontSize = Math.random() * 20 + 20 + "px";
+      document.body.appendChild(emoji);
+
+      setTimeout(() => {
+        emoji.remove();
+      }, 10000);
+    }
+
+    setInterval(createFloatingEmoji, 800);
   </script>
 </body>
 </html>
