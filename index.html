@@ -3,118 +3,124 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ela 💖</title>
-  <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+  <title>Ela ❤️</title>
   <style>
     body {
       margin: 0;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       height: 100vh;
-      background: black;
-      font-family: 'Lobster', cursive;
-      transition: background 1s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      transition: background 2s;
+      font-family: 'Pacifico', cursive;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+    .heart {
       position: relative;
+      width: 200px;
+      height: 180px;
+      transform: rotate(-45deg);
+      animation: pulse 1.5s infinite;
+      z-index: 2;
     }
 
-    svg {
-      width: 250px;
-      height: 250px;
-      transition: fill 1s;
-    }
-
-    .letter {
+    .heart::before,
+    .heart::after {
+      content: "";
       position: absolute;
-      font-size: 120px;
+      width: 200px;
+      height: 200px;
+      background: red;
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      top: -100px;
+      left: 0;
+    }
+
+    .heart::after {
+      left: 100px;
+      top: 0;
+    }
+
+    .heart-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(45deg);
+      font-size: 50px;
       color: white;
-      transition: color 1s;
-      user-select: none;
+      font-family: 'Pacifico', cursive;
+      z-index: 3;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
     }
 
-    #message {
+    @keyframes pulse {
+      0% { transform: rotate(-45deg) scale(1); }
+      50% { transform: rotate(-45deg) scale(1.1); }
+      100% { transform: rotate(-45deg) scale(1); }
+    }
+
+    .message {
       position: absolute;
-      bottom: 50px;
-      font-size: 30px;
+      bottom: 30px;
+      font-size: 28px;
       color: white;
       opacity: 0;
-      transition: opacity 0.5s;
+      transition: opacity 1s;
+      font-family: 'Pacifico', cursive;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
     }
 
     .emoji {
       position: absolute;
       font-size: 28px;
-      animation: float 6s linear infinite;
+      opacity: 0.8;
+      animation: float 8s linear infinite;
+      z-index: 1;
     }
 
     @keyframes float {
-      from { transform: translateY(100vh) translateX(0); opacity: 1; }
-      to { transform: translateY(-10vh) translateX(30px); opacity: 0; }
+      from { transform: translateY(100vh) rotate(0deg); }
+      to { transform: translateY(-10vh) rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <!-- Kalp SVG -->
-  <svg id="heart" viewBox="0 0 32 29.6">
-    <path d="M23.6,0c-2.6,0-5,1.2-6.6,3.2C15.4,1.2,13,0,10.4,0C5.6,0,2,3.6,2,8.4c0,9,14.9,17.6,14.9,17.6S31.8,17.4,31.8,8.4
-      C31.8,3.6,28.2,0,23.6,0z"/>
-  </svg>
-
-  <!-- Harf -->
-  <div class="letter" id="letter">E</div>
-
-  <!-- Mesaj -->
-  <div id="message">❤️ Seni Çok Seviyorum ❤️</div>
+  <div class="heart">
+    <div class="heart-text">ELA</div>
+  </div>
+  <div class="message" id="message">SENİ ÇOK SEVİYORUM ❤️🥰💍</div>
 
   <script>
-    const heart = document.getElementById("heart");
-    const letter = document.getElementById("letter");
-    const message = document.getElementById("message");
-    const body = document.body;
-
-    const letters = ["E", "L", "A"];
+    const colors = ["#0d1b2a", "#1b263b", "#2a3d66", "#6a0572", "#2b2d42", "#0f3460"];
     let i = 0;
+    setInterval(() => {
+      document.body.style.background = colors[i % colors.length];
+      i++;
+    }, 2000);
 
-    const colors = ["#ff1e56", "#ffac41", "#9d65c9", "#3ec1d3", "#f6416c"];
-
-    function changeHeart() {
-      i = (i + 1) % letters.length;
-      const randomColor = colors[Math.floor(Math.random() * colors.length)];
-      const bgColor = colors[Math.floor(Math.random() * colors.length)];
-
-      heart.querySelector("path").setAttribute("fill", randomColor);
-      letter.textContent = letters[i];
-      letter.style.color = "white";
-      body.style.background = bgColor;
-
-      // Harfi ortala
-      const rect = heart.getBoundingClientRect();
-      letter.style.left = rect.left + rect.width / 2 - 40 + "px";
-      letter.style.top = rect.top + rect.height / 2 - 70 + "px";
-    }
-
-    setInterval(changeHeart, 1000);
-
-    // Mesaj için tıklama
-    body.addEventListener("click", () => {
-      message.style.opacity = 1;
-      setTimeout(() => { message.style.opacity = 0; }, 2000);
+    document.body.addEventListener("click", () => {
+      document.getElementById("message").style.opacity = 1;
     });
 
-    // Arkaplanda emoji uçuşu
-    function spawnEmoji() {
-      const emojiList = ["❤️","💍","💕","💖","💘"];
+    function createEmoji() {
+      const emojiList = ["❤️", "💍", "💕", "💖"];
       const emoji = document.createElement("div");
       emoji.className = "emoji";
-      emoji.textContent = emojiList[Math.floor(Math.random()*emojiList.length)];
+      emoji.innerText = emojiList[Math.floor(Math.random() * emojiList.length)];
       emoji.style.left = Math.random() * window.innerWidth + "px";
-      emoji.style.top = window.innerHeight + "px";
+      emoji.style.animationDuration = (6 + Math.random() * 4) + "s";
       document.body.appendChild(emoji);
 
-      setTimeout(() => emoji.remove(), 6000);
+      setTimeout(() => emoji.remove(), 10000);
     }
-    setInterval(spawnEmoji, 800);
+
+    setInterval(createEmoji, 700);
   </script>
 </body>
 </html>
