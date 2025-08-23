@@ -12,27 +12,43 @@
       justify-content: center;
       align-items: center;
       flex-direction: column;
-      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fad0c4, #fbc2eb, #a18cd1);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
       overflow: hidden;
-      font-family: 'Arial', sans-serif;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      position: relative;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     h1 {
       font-size: 2em;
-      color: #fff;
-      text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+      color: white;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
       text-align: center;
       margin-bottom: 40px;
+      z-index: 2;
+    }
+
+    .btn-container {
+      z-index: 2;
+      display: flex;
+      gap: 20px;
     }
 
     .btn {
       font-size: 20px;
       padding: 15px 30px;
-      margin: 20px;
       border: none;
-      border-radius: 12px;
+      border-radius: 50px;
       cursor: pointer;
       transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
 
     #yesBtn {
@@ -40,17 +56,28 @@
       color: white;
     }
 
-    #noBtn {
-      background-color: #f1f1f1;
-      color: black;
+    #yesBtn:hover {
+      transform: scale(1.1);
+      background-color: #ff1f49;
     }
 
-    /* Arka planda yüzük animasyonu */
-    .ring {
+    #noBtn {
+      background-color: #f1f1f1;
+      color: #333;
+    }
+
+    #noBtn:hover {
+      transform: scale(1.1);
+      background-color: #ddd;
+    }
+
+    /* Arka plandaki süzülen emojiler */
+    .emoji {
       position: absolute;
       font-size: 30px;
       animation: float 10s linear infinite;
-      opacity: 0.8;
+      opacity: 0.7;
+      z-index: 0;
     }
 
     @keyframes float {
@@ -61,57 +88,77 @@
         transform: translateY(-10vh) rotate(360deg);
       }
     }
+
+    /* Evet butonu büyürken bounce efekti */
+    .grow-bounce {
+      animation: bounce 0.5s;
+    }
+
+    @keyframes bounce {
+      0% { transform: scale(1); }
+      30% { transform: scale(1.2); }
+      60% { transform: scale(0.95); }
+      100% { transform: scale(1.05); }
+    }
   </style>
 </head>
 <body>
   <h1>Eloşum 💕 Seninle evlenebilir miyim?</h1>
-  <div>
+  <div class="btn-container">
     <button id="yesBtn" class="btn">Evet 💍</button>
     <button id="noBtn" class="btn">Hayır 🙈</button>
   </div>
-  <p id="result"></p>
 
-  <!-- Konfeti kütüphanesi -->
+  <!-- Konfeti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <script>
     const yesBtn = document.getElementById("yesBtn");
     const noBtn = document.getElementById("noBtn");
 
-    let yesSize = 1;
+    let yesScale = 1;
 
     noBtn.addEventListener("click", () => {
-      yesSize += 0.3; 
-      yesBtn.style.transform = `scale(${yesSize})`;
+      yesScale += 0.2;
+      yesBtn.style.transform = `scale(${yesScale})`;
+      yesBtn.classList.add("grow-bounce");
+      setTimeout(() => yesBtn.classList.remove("grow-bounce"), 500);
     });
 
     yesBtn.addEventListener("click", () => {
-      document.body.innerHTML = "<h1>Eyww sağol 😍❤️</h1>";
+      document.body.innerHTML = "<h1 style='color:white; text-shadow:2px 2px 6px rgba(0,0,0,0.4); font-size:2.5em;'>Eyww sağol ❤️🥰</h1>";
       
-      // Konfeti efekti
-      confetti({
-        particleCount: 200,
-        spread: 90,
-        origin: { y: 0.6 }
-      });
+      // Konfeti patlaması
+      var duration = 2 * 1000;
+      var end = Date.now() + duration;
+
+      (function frame() {
+        confetti({
+          particleCount: 7,
+          spread: 120
+        });
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      })();
     });
 
-    // Arka plana yüzükler ekle
-    function createRing() {
-      const ring = document.createElement("div");
-      ring.classList.add("ring");
-      ring.textContent = "💍";
-      ring.style.left = Math.random() * 100 + "vw";
-      ring.style.animationDuration = (5 + Math.random() * 5) + "s";
-      ring.style.fontSize = (20 + Math.random() * 20) + "px";
-      document.body.appendChild(ring);
+    // Arka plana emojiler ekle
+    const emojis = ["💍", "❤️", "💖", "✨"];
+    function createEmoji() {
+      const emoji = document.createElement("div");
+      emoji.classList.add("emoji");
+      emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      emoji.style.left = Math.random() * 100 + "vw";
+      emoji.style.animationDuration = (6 + Math.random() * 6) + "s";
+      emoji.style.fontSize = (20 + Math.random() * 25) + "px";
+      document.body.appendChild(emoji);
 
       setTimeout(() => {
-        ring.remove();
-      }, 10000);
+        emoji.remove();
+      }, 12000);
     }
-
-    setInterval(createRing, 500);
+    setInterval(createEmoji, 500);
   </script>
 </body>
 </html>
