@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eloşum 💍</title>
+  <title>bebisimmmm 💕</title>
   <style>
     body {
       margin: 0;
@@ -12,7 +12,7 @@
       justify-content: center;
       align-items: center;
       flex-direction: column;
-      background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fad0c4, #fbc2eb, #a18cd1);
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
       background-size: 400% 400%;
       animation: gradientShift 15s ease infinite;
       overflow: hidden;
@@ -27,7 +27,7 @@
     }
 
     h1 {
-      font-size: 2em;
+      font-size: 1.8em; /* iPhone 13 için biraz küçültüldü */
       color: white;
       text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
       text-align: center;
@@ -39,6 +39,7 @@
       z-index: 2;
       display: flex;
       gap: 20px;
+      position: relative;
     }
 
     .btn {
@@ -54,10 +55,13 @@
     #yesBtn {
       background-color: #ff4d6d;
       color: white;
+      position: relative;
+      z-index: 5; /* Her zaman önde olacak */
+      transform: scale(1);
+      transition: transform 0.3s ease;
     }
 
     #yesBtn:hover {
-      transform: scale(1.1);
       background-color: #ff1f49;
     }
 
@@ -67,7 +71,6 @@
     }
 
     #noBtn:hover {
-      transform: scale(1.1);
       background-color: #ddd;
     }
 
@@ -77,28 +80,12 @@
       font-size: 30px;
       animation: float 10s linear infinite;
       opacity: 0.7;
-      z-index: 0;
+      z-index: 0; /* butonların arkasında */
     }
 
     @keyframes float {
-      from {
-        transform: translateY(100vh) rotate(0deg);
-      }
-      to {
-        transform: translateY(-10vh) rotate(360deg);
-      }
-    }
-
-    /* Evet butonu büyürken bounce efekti */
-    .grow-bounce {
-      animation: bounce 0.5s;
-    }
-
-    @keyframes bounce {
-      0% { transform: scale(1); }
-      30% { transform: scale(1.2); }
-      60% { transform: scale(0.95); }
-      100% { transform: scale(1.05); }
+      from { transform: translateY(100vh) rotate(0deg); }
+      to { transform: translateY(-10vh) rotate(360deg); }
     }
   </style>
 </head>
@@ -121,20 +108,17 @@
     noBtn.addEventListener("click", () => {
       yesScale += 0.2;
       yesBtn.style.transform = `scale(${yesScale})`;
-      yesBtn.classList.add("grow-bounce");
-      setTimeout(() => yesBtn.classList.remove("grow-bounce"), 500);
     });
 
     yesBtn.addEventListener("click", () => {
-      document.body.innerHTML = "<h1 style='color:white; text-shadow:2px 2px 6px rgba(0,0,0,0.4); font-size:2.5em;'>Eyww sağol ❤️🥰</h1>";
+      document.body.innerHTML = "<h1 style='color:white; text-shadow:2px 2px 6px rgba(0,0,0,0.4); font-size:2em; text-align:center;'>Eyww sağol ❤️🥰</h1>";
       
       // Konfeti patlaması
       var duration = 2 * 1000;
       var end = Date.now() + duration;
-
       (function frame() {
         confetti({
-          particleCount: 7,
+          particleCount: 8,
           spread: 120
         });
         if (Date.now() < end) {
@@ -153,10 +137,7 @@
       emoji.style.animationDuration = (6 + Math.random() * 6) + "s";
       emoji.style.fontSize = (20 + Math.random() * 25) + "px";
       document.body.appendChild(emoji);
-
-      setTimeout(() => {
-        emoji.remove();
-      }, 12000);
+      setTimeout(() => emoji.remove(), 12000);
     }
     setInterval(createEmoji, 500);
   </script>
