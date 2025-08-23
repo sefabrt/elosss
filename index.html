@@ -3,156 +3,118 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ELA</title>
+  <title>Ela 💖</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       overflow: hidden;
-      height: 100vh;
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
+      height: 100vh;
       background: black;
-      transition: background 2s ease;
-      font-family: "Comic Sans MS", cursive, sans-serif;
-    }
-
-    .heart {
+      font-family: 'Lobster', cursive;
+      transition: background 1s;
       position: relative;
-      width: 200px;
-      height: 180px;
-      transform: rotate(-45deg);
-      animation: pulse 1s infinite;
-      z-index: 2;
     }
 
-    .heart::before,
-    .heart::after {
-      content: "";
-      position: absolute;
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      background: red;
-      top: -100px;
-      left: 0;
-    }
-
-    .heart::after {
-      left: 100px;
-      top: 0;
+    svg {
+      width: 250px;
+      height: 250px;
+      transition: fill 1s;
     }
 
     .letter {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) rotate(45deg);
-      font-size: 80px;
-      font-weight: bold;
+      font-size: 120px;
       color: white;
-      z-index: 3;
+      transition: color 1s;
+      user-select: none;
     }
 
-    @keyframes pulse {
-      0% { transform: scale(1) rotate(-45deg); }
-      50% { transform: scale(1.1) rotate(-45deg); }
-      100% { transform: scale(1) rotate(-45deg); }
-    }
-
-    .floating {
+    #message {
       position: absolute;
+      bottom: 50px;
       font-size: 30px;
-      opacity: 0.7;
-      animation: float 10s linear infinite;
-      z-index: 1;
+      color: white;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    .emoji {
+      position: absolute;
+      font-size: 28px;
+      animation: float 6s linear infinite;
     }
 
     @keyframes float {
-      0% {
-        transform: translateY(100vh) translateX(0);
-        opacity: 0;
-      }
-      30% { opacity: 1; }
-      100% {
-        transform: translateY(-10vh) translateX(50px);
-        opacity: 0;
-      }
-    }
-
-    .message {
-      position: absolute;
-      top: 70%;
-      font-size: 28px;
-      font-weight: bold;
-      color: pink;
-      opacity: 0;
-      transition: opacity 1s ease;
-      z-index: 5;
-    }
-
-    .show {
-      opacity: 1;
+      from { transform: translateY(100vh) translateX(0); opacity: 1; }
+      to { transform: translateY(-10vh) translateX(30px); opacity: 0; }
     }
   </style>
 </head>
 <body>
-  <div class="heart" id="heart">
-    <div class="letter" id="letter">E</div>
-  </div>
-  <div class="message" id="message">Seni Çok Seviyorum ❤️</div>
+  <!-- Kalp SVG -->
+  <svg id="heart" viewBox="0 0 32 29.6">
+    <path d="M23.6,0c-2.6,0-5,1.2-6.6,3.2C15.4,1.2,13,0,10.4,0C5.6,0,2,3.6,2,8.4c0,9,14.9,17.6,14.9,17.6S31.8,17.4,31.8,8.4
+      C31.8,3.6,28.2,0,23.6,0z"/>
+  </svg>
+
+  <!-- Harf -->
+  <div class="letter" id="letter">E</div>
+
+  <!-- Mesaj -->
+  <div id="message">❤️ Seni Çok Seviyorum ❤️</div>
 
   <script>
-    const letters = ["E", "L", "A"];
-    const colors = ["red", "hotpink", "purple", "crimson", "orange"];
-    const bgColors = ["#000000", "#1a1a2e", "#0f3460", "#16213e", "#2c003e"];
-    let index = 0;
-    const heart = document.querySelector(".heart");
+    const heart = document.getElementById("heart");
     const letter = document.getElementById("letter");
+    const message = document.getElementById("message");
     const body = document.body;
 
-    setInterval(() => {
-      index = (index + 1) % letters.length;
-      letter.textContent = letters[index];
-      let color = colors[index % colors.length];
-      heart.style.setProperty("--heart-color", color);
-      heart.style.background = color;
-      heart.style.setProperty("background", color);
-      heart.style.setProperty("color", "white");
+    const letters = ["E", "L", "A"];
+    let i = 0;
 
-      body.style.background = bgColors[Math.floor(Math.random() * bgColors.length)];
-      heart.style.setProperty("--letter-color", "white");
+    const colors = ["#ff1e56", "#ffac41", "#9d65c9", "#3ec1d3", "#f6416c"];
 
-      heart.querySelectorAll("::before, ::after").forEach(el => {
-        el.style.background = color;
-      });
-    }, 1000);
+    function changeHeart() {
+      i = (i + 1) % letters.length;
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      const bgColor = colors[Math.floor(Math.random() * colors.length)];
 
-    // Ekrana tıklayınca mesaj
-    const message = document.getElementById("message");
-    document.body.addEventListener("click", () => {
-      message.classList.add("show");
-      setTimeout(() => {
-        message.classList.remove("show");
-      }, 3000);
-    });
+      heart.querySelector("path").setAttribute("fill", randomColor);
+      letter.textContent = letters[i];
+      letter.style.color = "white";
+      body.style.background = bgColor;
 
-    // Emoji yağmuru
-    function createFloatingEmoji() {
-      const emojis = ["❤️", "💍", "💕", "✨", "💖"];
-      const emoji = document.createElement("div");
-      emoji.classList.add("floating");
-      emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-      emoji.style.left = Math.random() * window.innerWidth + "px";
-      emoji.style.fontSize = Math.random() * 20 + 20 + "px";
-      document.body.appendChild(emoji);
-
-      setTimeout(() => {
-        emoji.remove();
-      }, 10000);
+      // Harfi ortala
+      const rect = heart.getBoundingClientRect();
+      letter.style.left = rect.left + rect.width / 2 - 40 + "px";
+      letter.style.top = rect.top + rect.height / 2 - 70 + "px";
     }
 
-    setInterval(createFloatingEmoji, 800);
+    setInterval(changeHeart, 1000);
+
+    // Mesaj için tıklama
+    body.addEventListener("click", () => {
+      message.style.opacity = 1;
+      setTimeout(() => { message.style.opacity = 0; }, 2000);
+    });
+
+    // Arkaplanda emoji uçuşu
+    function spawnEmoji() {
+      const emojiList = ["❤️","💍","💕","💖","💘"];
+      const emoji = document.createElement("div");
+      emoji.className = "emoji";
+      emoji.textContent = emojiList[Math.floor(Math.random()*emojiList.length)];
+      emoji.style.left = Math.random() * window.innerWidth + "px";
+      emoji.style.top = window.innerHeight + "px";
+      document.body.appendChild(emoji);
+
+      setTimeout(() => emoji.remove(), 6000);
+    }
+    setInterval(spawnEmoji, 800);
   </script>
 </body>
 </html>
