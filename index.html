@@ -1,145 +1,419 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eloşum 💍</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Flappy Love 💘</title>
   <style>
-    body {
+    :root {
+      --bg: #ffd1dc; /* pembiş arka plan */
+      --fg: #ff3f8e; /* pembe koyu */
+      --fg-dark: #c52669;
+      --text: #6b1040;
+    }
+
+    html, body {
       margin: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
-      background-size: 400% 400%;
-      animation: gradientShift 15s ease infinite;
-      overflow: hidden;
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      position: relative;
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: manipulation;
     }
 
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    .wrap {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
 
-    h1 {
-      font-size: 1.8em; /* iPhone 13 için biraz küçültüldü */
-      color: white;
-      text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
-      text-align: center;
-      margin-bottom: 40px;
-      z-index: 2;
-    }
-
-    .btn-container {
-      z-index: 2;
-      display: flex;
-      gap: 20px;
-      position: relative;
-    }
-
-    .btn {
-      font-size: 20px;
-      padding: 15px 30px;
-      border: none;
-      border-radius: 50px;
+    canvas {
+      background: linear-gradient(180deg, #ffe6ee, #ffd1dc 60%);
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.12);
+      max-width: 100vw;
+      max-height: 100vh;
+      image-rendering: pixelated;
       cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
 
-    #yesBtn {
-      background-color: #ff4d6d;
-      color: white;
-      position: relative;
-      z-index: 5; /* Her zaman önde olacak */
-      transform: scale(1);
-      transition: transform 0.3s ease;
+    .hud {
+      position: fixed;
+      top: 16px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 10px; align-items: center;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 8px 14px; border-radius: 999px; backdrop-filter: blur(8px);
+      font-weight: 700; letter-spacing: .3px;
     }
 
-    #yesBtn:hover {
-      background-color: #ff1f49;
+    .btnbar {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 12px;
     }
+    .btn {
+      background: var(--fg);
+      color: white; border: none; border-radius: 999px;
+      padding: 10px 16px; font-size: 14px; font-weight: 700; letter-spacing: .2px;
+      box-shadow: 0 6px 16px rgba(255, 63, 142, .35);
+    }
+    .btn:active { transform: translateY(1px); }
 
-    #noBtn {
-      background-color: #f1f1f1;
-      color: #333;
+    .toast {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.85);
+      padding: 16px 20px; border-radius: 16px; backdrop-filter: blur(8px);
+      text-align: center; font-weight: 700; line-height: 1.3;
+      box-shadow: 0 10px 30px rgba(0,0,0,.12);
+      max-width: min(90vw, 420px);
     }
-
-    #noBtn:hover {
-      background-color: #ddd;
-    }
-
-    /* Arka plandaki süzülen emojiler */
-    .emoji {
-      position: absolute;
-      font-size: 30px;
-      animation: float 10s linear infinite;
-      opacity: 0.7;
-      z-index: 0; /* butonların arkasında */
-    }
-
-    @keyframes float {
-      from { transform: translateY(100vh) rotate(0deg); }
-      to { transform: translateY(-10vh) rotate(360deg); }
-    }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
-  <h1>Eloşum 💕 Seninle evlenebilir miyim?</h1>
-  <div class="btn-container">
-    <button id="yesBtn" class="btn">Evet 💍</button>
-    <button id="noBtn" class="btn">Hayır 🙈</button>
+  <div class="wrap">
+    <!-- iPhone 13 viewport: 390 x 844 CSS px (portrait). Biz responsive ölçekleyeceğiz. -->
+    <canvas id="game" width="390" height="844" aria-label="Flappy Love"></canvas>
   </div>
 
-  <!-- Konfeti -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <div class="hud" id="hud">
+    <span>Skor: <b id="score">0</b></span>
+    <span>•</span>
+    <span>En İyi: <b id="best">0</b></span>
+  </div>
+
+  <div class="btnbar">
+    <button class="btn" id="pauseBtn">Duraklat</button>
+    <button class="btn" id="restartBtn">Yeniden Başlat</button>
+  </div>
+
+  <div class="toast" id="toast">
+    <div style="font-size:18px">Flappy Love 💘</div>
+    <div style="margin-top:6px; font-weight:600">Ekrana dokun / tıkla ya da <kbd>Boşluk</kbd> ile kanat çırp!</div>
+    <div style="margin-top:8px; font-size:13px; opacity:.8">"Biraz daha ciddi ol" mesajını aldım… ama kalbim hep seninle. Uçamazsam da denerim. 💞</div>
+  </div>
 
   <script>
-    const yesBtn = document.getElementById("yesBtn");
-    const noBtn = document.getElementById("noBtn");
+    // --- Helpers -----------------------------------------------------------
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const bestEl  = document.getElementById('best');
+    const toast = document.getElementById('toast');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const restartBtn = document.getElementById('restartBtn');
 
-    let yesScale = 1;
+    let DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
 
-    noBtn.addEventListener("click", () => {
-      yesScale += 0.2;
-      yesBtn.style.transform = `scale(${yesScale})`;
-    });
+    function fitCanvas() {
+      // Tasarım oranı iPhone 13 (390x844). Ama her ekrana sığdır.
+      const vw = Math.min(window.innerWidth, 420); // çok genişse limit
+      const vh = Math.min(window.innerHeight, 920);
+      const targetRatio = 390/844;
+      let w = vw, h = vw / targetRatio;
+      if (h > vh) { h = vh; w = h * targetRatio; }
 
-    yesBtn.addEventListener("click", () => {
-      document.body.innerHTML = "<h1 style='color:white; text-shadow:2px 2px 6px rgba(0,0,0,0.4); font-size:2em; text-align:center;'>Yiaaaaaaa 💍😘</h1>";
-      
-      // Konfeti patlaması
-      var duration = 2 * 1000;
-      var end = Date.now() + duration;
-      (function frame() {
-        confetti({
-          particleCount: 8,
-          spread: 120
-        });
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        }
-      })();
-    });
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
 
-    // Arka plana emojiler ekle
-    const emojis = ["💍", "❤️", "💖", "✨"];
-    function createEmoji() {
-      const emoji = document.createElement("div");
-      emoji.classList.add("emoji");
-      emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-      emoji.style.left = Math.random() * 100 + "vw";
-      emoji.style.animationDuration = (6 + Math.random() * 6) + "s";
-      emoji.style.fontSize = (20 + Math.random() * 25) + "px";
-      document.body.appendChild(emoji);
-      setTimeout(() => emoji.remove(), 12000);
+      const cssW = Math.round(w);
+      const cssH = Math.round(h);
+      canvas.width = Math.round(cssW * DPR);
+      canvas.height = Math.round(cssH * DPR);
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+      world.W = cssW; world.H = cssH;
     }
-    setInterval(createEmoji, 500);
+
+    // --- Game State -------------------------------------------------------
+    const world = {
+      W: 390, H: 844,
+      gravity: 0.5,
+      flap: -8,
+      pipeGap: 170,
+      pipeW: 64,
+      pipeSpeed: 2.6,
+      birdX: 120,
+      groundH: 80,
+      started: false,
+      paused: false,
+      over: false,
+      score: 0,
+      best: Number(localStorage.getItem('flappy-love-best') || 0),
+      hue: 330,
+    };
+    bestEl.textContent = world.best;
+
+    const bird = { y: 300, vy: 0, r: 16 };
+    /**
+     * Boru yapısı: { x, topH } => top boru yüksekliği.
+     */
+    const pipes = [];
+
+    function resetGame() {
+      world.started = false;
+      world.paused = false;
+      world.over = false;
+      world.score = 0;
+      bird.y = world.H * 0.45;
+      bird.vy = 0;
+      pipes.length = 0;
+      spawnInitialPipes();
+      scoreEl.textContent = 0;
+      toast.classList.remove('hidden');
+    }
+
+    function spawnInitialPipes() {
+      // Ekranı 2-3 boru ile doldur
+      let x = world.W + 100;
+      for (let i = 0; i < 3; i++) {
+        pipes.push(makePipe(x));
+        x += 220;
+      }
+    }
+
+    function makePipe(x) {
+      // Üst boru yüksekliğini rastgele ayarla, boşluğu zemin ve tavanı aşmayacak şekilde tut
+      const margin = 80;
+      const gap = Math.max(140, Math.min(220, world.pipeGap + (Math.random()*60 - 30)));
+      const topH = Math.floor(margin + Math.random() * (world.H - world.groundH - margin - gap));
+      return { x, topH, passed: false };
+    }
+
+    // --- Input ------------------------------------------------------------
+    function flap() {
+      if (world.over) { resetGame(); return; }
+      world.started = true;
+      bird.vy = world.flap;
+      toast.classList.add('hidden');
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); flap(); }
+      if (e.code === 'KeyP') togglePause();
+    }, { passive: false });
+    canvas.addEventListener('mousedown', flap);
+    canvas.addEventListener('touchstart', (e) => { e.preventDefault(); flap(); }, { passive: false });
+
+    function togglePause() {
+      if (world.over) return;
+      world.paused = !world.paused;
+      pauseBtn.textContent = world.paused ? 'Devam' : 'Duraklat';
+    }
+    pauseBtn.addEventListener('click', togglePause);
+    restartBtn.addEventListener('click', resetGame);
+
+    // --- Game Loop --------------------------------------------------------
+    let last = 0;
+    function loop(ts) {
+      requestAnimationFrame(loop);
+      const dt = Math.min(32, ts - last);
+      last = ts;
+      if (world.paused) return;
+      update(dt/16.67);
+      draw();
+    }
+
+    function update(scale) {
+      // Arka plan rengi için hafif hue kaydırma (pembe ton)
+      world.hue = (world.hue + 0.05) % 360;
+
+      if (!world.started) return; // kuş sabit durur
+
+      // Fizik
+      bird.vy += world.gravity * scale;
+      bird.y += bird.vy * scale;
+
+      // Borular ilerler
+      for (let p of pipes) {
+        p.x -= world.pipeSpeed * scale * 60/60; // sabit hız
+      }
+
+      // Yeni boru üret, ekran dışı olanı sil
+      if (pipes.length && pipes[0].x + world.pipeW < -20) pipes.shift();
+      const lastPipe = pipes[pipes.length - 1];
+      if (lastPipe && lastPipe.x < world.W - 220) pipes.push(makePipe(world.W + 80));
+
+      // Skor geçişi
+      for (let p of pipes) {
+        if (!p.passed && p.x + world.pipeW < world.birdX) {
+          p.passed = true;
+          world.score++;
+          scoreEl.textContent = world.score;
+        }
+      }
+
+      // Çarpışmalar
+      const groundY = world.H - world.groundH;
+      if (bird.y + bird.r > groundY) return gameOver();
+      if (bird.y - bird.r < 0) return gameOver();
+
+      for (let p of pipes) {
+        const gapTop = p.topH;
+        const gapBottom = p.topH + world.pipeGap;
+        const bx = world.birdX, by = bird.y, r = bird.r;
+        // Yatay çarpışma
+        if (bx + r > p.x && bx - r < p.x + world.pipeW) {
+          // Dikey çarpışma (boşluğun dışında)
+          if (by - r < gapTop || by + r > gapBottom) {
+            return gameOver();
+          }
+        }
+      }
+    }
+
+    function gameOver() {
+      world.over = true; world.started = false;
+      if (world.score > world.best) { world.best = world.score; localStorage.setItem('flappy-love-best', world.best); }
+      bestEl.textContent = world.best;
+      toast.innerHTML = `<div style="font-size:18px">Olamadı… ama sevgimiz uçar 💞</div>
+      <div style="margin-top:6px">Skor: <b>${world.score}</b> • En İyi: <b>${world.best}</b></div>
+      <div style="margin-top:8px; font-size:13px; opacity:.85">Tekrar denemek için dokun / tıkla ya da <kbd>Boşluk</kbd> bas.</div>`;
+      toast.classList.remove('hidden');
+    }
+
+    function draw() {
+      const W = world.W, H = world.H;
+      ctx.clearRect(0, 0, W, H);
+
+      // Arka plan (bulutçuklar)
+      drawBackground();
+
+      // Borular
+      for (let p of pipes) drawPipe(p);
+
+      // Zemin
+      drawGround();
+
+      // Kuş (kalp!)
+      drawHeartBird(world.birdX, bird.y, bird.r);
+
+      // Başlamadıysa "dokun" ipucu
+      if (!world.started && !world.over) drawTapHint();
+
+      // Skor hud (canvas üstü yerine sabit HUD kullanıyoruz)
+    }
+
+    function drawBackground() {
+      const W = world.W, H = world.H;
+      // yumuşak pembe degrade zaten CSS; burada birkaç bulut çizelim
+      ctx.save();
+      ctx.globalAlpha = 0.35;
+      for (let i = 0; i < 6; i++) {
+        const x = (i * 120 + (performance.now()/40) % (W + 240)) - 120;
+        const y = 80 + (i%3)*80;
+        drawCloud(W - x, y, 28 + (i%3)*10);
+      }
+      ctx.restore();
+    }
+
+    function drawCloud(x, y, r) {
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI*2);
+      ctx.arc(x + r*0.9, y + r*0.2, r*0.85, 0, Math.PI*2);
+      ctx.arc(x - r*0.9, y + r*0.2, r*0.75, 0, Math.PI*2);
+      ctx.fillStyle = 'white';
+      ctx.fill();
+    }
+
+    function drawPipe(p) {
+      const x = p.x, w = world.pipeW;
+      const gapTop = p.topH, gapBottom = p.topH + world.pipeGap;
+      // Üst boru
+      ctx.fillStyle = '#ff89b6';
+      ctx.fillRect(x, 0, w, gapTop);
+      // Alt boru
+      ctx.fillStyle = '#ff7aa9';
+      ctx.fillRect(x, gapBottom, w, world.H - world.groundH - gapBottom);
+      // Kenarlıklar
+      ctx.strokeStyle = '#c94a7c';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x + 0.5, 0.5, w - 1, gapTop - 1);
+      ctx.strokeRect(x + 0.5, gapBottom + 0.5, w - 1, world.H - world.groundH - gapBottom - 1);
+    }
+
+    function drawGround() {
+      const y = world.H - world.groundH;
+      ctx.fillStyle = '#ffc1d5';
+      ctx.fillRect(0, y, world.W, world.groundH);
+      // Şeritler
+      ctx.fillStyle = '#ffabc9';
+      for (let i = 0; i < world.W; i += 24) {
+        ctx.fillRect(i, y + 50, 16, 6);
+      }
+    }
+
+    function drawHeartBird(x, y, r) {
+      // Kalp şeklinde bird
+      ctx.save();
+      ctx.translate(x, y);
+      const s = r / 16; // ölçek
+      ctx.scale(s, s);
+      ctx.rotate(-Math.min(0.4, Math.max(-0.4, bird.vy/20))); // hıza göre tilt
+
+      // gölge
+      ctx.save();
+      ctx.translate(8, 10);
+      ctx.fillStyle = 'rgba(0,0,0,0.12)';
+      heartPath();
+      ctx.fill();
+      ctx.restore();
+
+      // gövde
+      const grd = ctx.createLinearGradient(-20, -20, 20, 20);
+      grd.addColorStop(0, '#ff4d94');
+      grd.addColorStop(1, '#ff1f7a');
+      ctx.fillStyle = grd;
+      heartPath();
+      ctx.fill();
+
+      // parıltı
+      ctx.beginPath();
+      ctx.ellipse(-6, -10, 6, 4, 0, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(255,255,255,.8)';
+      ctx.fill();
+
+      ctx.restore();
+
+      function heartPath() {
+        ctx.beginPath();
+        ctx.moveTo(0, 6);
+        ctx.bezierCurveTo(12, -10, 30, -2, 0, 26);
+        ctx.bezierCurveTo(-30, -2, -12, -10, 0, 6);
+        ctx.closePath();
+      }
+    }
+
+    function drawTapHint() {
+      const msg = 'Dokun / Tıkla / Boşluk';
+      ctx.font = '700 16px Inter, system-ui, sans-serif';
+      ctx.fillStyle = 'rgba(0,0,0,0.35)';
+      const w = ctx.measureText(msg).width + 20;
+      const x = world.W/2 - w/2; const y = world.H*0.32;
+      roundRect(ctx, x, y, w, 34, 14);
+      ctx.fill();
+      ctx.fillStyle = '#6b1040';
+      ctx.fillText(msg, world.W/2 - (w-20)/2, y + 23);
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x+r, y);
+      ctx.arcTo(x+w, y, x+w, y+h, r);
+      ctx.arcTo(x+w, y+h, x, y+h, r);
+      ctx.arcTo(x, y+h, x, y, r);
+      ctx.arcTo(x, y, x+w, y, r);
+      ctx.closePath();
+    }
+
+    // --- Init -------------------------------------------------------------
+    fitCanvas();
+    resetGame();
+    requestAnimationFrame(loop);
+    window.addEventListener('resize', () => { DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1)); fitCanvas(); });
   </script>
 </body>
 </html>
